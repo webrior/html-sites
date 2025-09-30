@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="DataFacile — Convertisseur JSON ↔ CSV gratuit, rapide et sécurisé. Outils pour développeurs et analystes." />
+  <title>DataFacile — Convertisseur JSON ↔ CSV</title>
+
+  <!-- SEO / Social -->
+  <meta property="og:title" content="DataFacile — Convertisseur JSON ↔ CSV" />
+  <meta property="og:description" content="Convertissez rapidement JSON en CSV et CSV en JSON — outil statique, sans backend." />
+  <meta property="og:type" content="website" />
+
+  <style>
+    /* ---------- Reset minimal ---------- */
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg,#0f172a 0%, #071025 100%);
+      color:#e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+      padding:32px;
+      display:flex;
+      flex-direction:column;
+      gap:24px;
+      min-height:100vh;
+    }
+
+    /* ---------- Container ---------- */
+    .wrap{
+      max-width:1200px;
+      margin:0 auto;
+      width:100%;
+    }
+
+    /* ---------- Header ---------- */
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:6px;
+    }
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .logo{
+      width:56px;height:56px;border-radius:12px;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg,#7c3aed,#06b6d4);
+      box-shadow:0 6px 20px rgba(3,7,18,0.6);
+      font-weight:700;color:white;font-size:20px;
+    }
+    h1{font-size:20px;margin:0}
+    .sub{font-size:12px;opacity:.9;color:#cfe7ff;margin-top:4px}
+
+    /* ---------- Layout main ---------- */
+    main{
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap:20px;
+    }
+    @media (max-width:980px){
+      main{grid-template-columns:1fr; padding-bottom:40px}
+      .right{order:2}
+    }
+
+    /* ---------- Card ---------- */
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      border-radius:14px;
+      padding:18px;
+      box-shadow: 0 6px 30px rgba(2,6,23,0.6);
+      border:1px solid rgba(255,255,255,0.03);
+    }
+
+    /* ---------- Tool area ---------- */
+    .toolbar{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      margin-bottom:10px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      background:linear-gradient(180deg,#0ea5a4,#0369a1);
+      border:none;color:white;padding:10px 12px;border-radius:10px;cursor:pointer;
+      font-weight:600;font-size:14px;
+      box-shadow:0 6px 18px rgba(3,7,18,0.5);
+    }
+    .btn.secondary{
+      background:transparent;border:1px solid rgba(255,255,255,0.06);
+      color:#cde7ff;
+    }
+    .btn.ghost{background:transparent;border:0;color:#cde7ff}
+
+    .row{
+      display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap;
+    }
+    .label{font-size:13px;color:#a8d0ff;opacity:.9}
+
+    textarea{
+      width:100%;min-height:260px;border-radius:10px;padding:14px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+      color:#e6f3ff;border:1px solid rgba(255,255,255,0.03);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+      font-size:13px;resize:vertical;
+    }
+
+    select,input[type=file]{
+      padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);
+      background:transparent;color:inherit;
+    }
+
+    .info{
+      font-size:13px;color:#b8d6ff;background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+      padding:10px;border-radius:8px;border:1px dashed rgba(255,255,255,0.03);
+    }
+
+    /* ---------- Right column ---------- */
+    .right .card{position:sticky;top:32px}
+    .meta{display:flex;flex-direction:column;gap:10px}
+    .ad-slot{
+      min-height:90px;border-radius:10px;border:1px dashed rgba(255,255,255,0.04);
+      display:grid;place-items:center;color:#b7d8ff;background:linear-gradient(180deg, rgba(0,0,0,0.02), transparent);
+      margin:10px 0;
+    }
+
+    .foot{
+      text-align:center;color:#9fbff4;opacity:.9;font-size:13px;padding-top:16px;
+    }
+
+    .status{
+      font-size:13px;padding:10px;border-radius:8px;background:linear-gradient(180deg, rgba(0,0,0,0.02), transparent);
+      border:1px solid rgba(255,255,255,0.02);
+    }
+
+    /* small helpers */
+    .muted{opacity:.75;font-size:13px}
+    .kbd{background:rgba(255,255,255,0.03);padding:4px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.02);font-family:ui-monospace,monospace}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .small{font-size:13px}
+    a.link{color:#bfe9ff;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">DF</div>
+        <div>
+          <h1>DataFacile <span style="opacity:.6;font-weight:600">— Convertisseur JSON ↔ CSV</span></h1>
+          <div class="sub">Outil extrêment rapide, front-end only — pour développeurs & analystes</div>
+        </div>
+      </div>
+
+      <nav class="muted">
+        <span class="kbd">Gratuit</span> · <a class="link" href="#guide">Guide</a> · <a class="link" href="#privacy">Politique</a>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Left: Tool -->
+      <section class="card" aria-label="Outil principal">
+        <div class="toolbar" role="toolbar" aria-label="Actions principales">
+          <button id="btnJsonToCsv" class="btn">JSON → CSV</button>
+          <button id="btnCsvToJson" class="btn secondary">CSV → JSON</button>
+
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <button id="btnClear" class="btn ghost">Effacer</button>
+            <button id="btnSample" class="btn secondary">Exemple</button>
+          </div>
+        </div>
+
+        <div class="row">
+          <label class="label" for="in">Entrée</label>
+          <input id="fileInput" type="file" accept=".json,.csv,text/csv,application/json" aria-label="Importer un fichier CSV ou JSON"/>
+          <select id="sepSelect" title="Séparateur CSV">
+            <option value=",">Séparateur : Virgule (,)</option>
+            <option value=";">Séparateur : Point-virgule (;)</option>
+            <option value="\t">Séparateur : Tabulation (tab)</option>
+            <option value="auto" selected>Détection automatique</option>
+          </select>
+        </div>
+
+        <textarea id="inputArea" placeholder='Colle ton JSON ou CSV ici... Exemple : [ {"nom":"Alice","age":30}, {"nom":"Bob","age":25} ]' aria-label="Zone d'entrée"></textarea>
+
+        <div class="row" style="margin-top:12px;align-items:center">
+          <div class="actions">
+            <button id="convertBtn" class="btn">Convertir</button>
+            <button id="copyBtn" class="btn secondary">Copier sortie</button>
+            <button id="downloadBtn" class="btn">Télécharger</button>
+            <button id="beautifyBtn" class="btn secondary">Beautify JSON</button>
+          </div>
+          <div style="margin-left:auto" class="muted small">Format détecté : <span id="detected">—</span></div>
+        </div>
+
+        <hr style="border:none;height:1px;background:rgba(255,255,255,0.03);margin:14px 0" />
+
+        <div class="label" style="margin-bottom:6px">Sortie</div>
+        <textarea id="outputArea" readonly placeholder="La sortie apparaîtra ici..." aria-label="Zone de sortie"></textarea>
+
+        <div style="display:flex;gap:8px;margin-top:12px;align-items:center;flex-wrap:wrap">
+          <div class="info small">Astuce : si CSV → JSON, les colonnes deviennent clés d'objets. Gère correctement les champs entre guillemets.</div>
+          <div style="margin-left:auto" class="small">Version: <strong>1.0.0</strong></div>
+        </div>
+      </section>
+
+      <!-- Right: Meta, ads, guide -->
+      <aside class="right">
+        <div class="card">
+          <div class="meta">
+            <div class="status">
+              <strong>DataFacile</strong><br/>
+              Convertisseur statique, 100% côté client — pas de serveur, pas de trace côté back par défaut.
+            </div>
+
+            <!-- Ad slot top -->
+            <div class="ad-slot" aria-hidden="true" id="ad-top">
+              <!-- PLACEHOLDER AD (TOP) -->
+              <!-- Pour activer AdSense : collez ici le code fourni par Google AdSense. Ex :
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+                  crossorigin="anonymous"></script>
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-XXXXXXXXXXXX"
+                     data-ad-slot="YYYYYYYYYY"
+                     data-ad-format="auto"></ins>
+                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+              -->
+              <div style="text-align:center;font-size:13px;color:#9ecbff">Emplacement annonce</div>
+            </div>
+
+            <div>
+              <h3 style="margin:0 0 8px 0">Comment ça marche</h3>
+              <ol style="margin:0 0 6px 18px;padding:0;color:#cfe8ff">
+                <li>Colle ton JSON ou CSV dans la zone Entrée</li>
+                <li>Sélectionne le séparateur ou laisse la détection auto</li>
+                <li>Clique sur Convertir → Copie ou Télécharge</li>
+              </ol>
+            </div>
+
+            <div style="display:flex;gap:8px">
+              <a class="link" id="guide" href="#guide">Guide complet</a>
+              <a class="link" id="privacy" href="#privacy">Politique</a>
+            </div>
+
+            <!-- Ad slot middle -->
+            <div class="ad-slot" aria-hidden="true" id="ad-middle">
+              <!-- PLACEHOLDER AD (MIDDLE) -->
+              <div style="text-align:center;font-size:13px;color:#9ecbff">Emplacement annonce</div>
+            </div>
+
+            <div>
+              <h4 style="margin:6px 0 4px 0">Options avancées</h4>
+              <ul style="margin:0 0 8px 20px;color:#cde8ff">
+                <li>Détection auto du séparateur</li>
+                <li>Support des champs entre guillemets</li>
+                <li>Téléchargement en .csv ou .json</li>
+              </ul>
+            </div>
+
+            <div style="font-size:13px;color:#a9d2ff">
+              <strong>Note GDPR</strong> : pour AdSense en Europe, ajoute une page Politique de confidentialité et message de consentement si nécessaire.
+            </div>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <div>
+            <h4 style="margin:0 0 8px 0">Exemples rapides</h4>
+            <button id="loadExampleArray" class="btn secondary">Exemple : Array d'objets</button>
+            <button id="loadExampleCsv" class="btn secondary">Exemple : CSV</button>
+          </div>
+
+          <div style="height:14px"></div>
+
+          <div class="info small">
+            Pour de gros fichiers (>5MB), préférez un traitement local sur poste de travail. GitHub Pages convient très bien pour l'outil en ligne.
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="foot">
+      DataFacile — construit avec ❤ · <a class="link" href="#privacy">Politique de confidentialité</a> · <a class="link" href="#guide">Guide</a>
+    </footer>
+  </div>
+
+  <script>
+  //////////////////////////////////////////////////
+  // DataFacile — JSON ↔ CSV (front-end only)
+  // Robust, no eval, handles quotes, auto-detect separator
+  //////////////////////////////////////////////////
+
+  (function(){
+    // DOM
+    const input = document.getElementById('inputArea');
+    const output = document.getElementById('outputArea');
+    const convertBtn = document.getElementById('convertBtn');
+    const btnJsonToCsv = document.getElementById('btnJsonToCsv');
+    const btnCsvToJson = document.getElementById('btnCsvToJson');
+    const copyBtn = document.getElementById('copyBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const beautifyBtn = document.getElementById('beautifyBtn');
+    const fileInput = document.getElementById('fileInput');
+    const sepSelect = document.getElementById('sepSelect');
+    const detected = document.getElementById('detected');
+    const btnClear = document.getElementById('btnClear');
+    const btnSample = document.getElementById('btnSample');
+    const loadExampleArray = document.getElementById('loadExampleArray');
+    const loadExampleCsv = document.getElementById('loadExampleCsv');
+
+    // Helpers
+    function setStatus(typeText){
+      detected.textContent = typeText;
+    }
+
+    function download(filename, text){
+      const a = document.createElement('a');
+      const blob = new Blob([text], {type: 'text/plain;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function copyToClipboard(text){
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        return navigator.clipboard.writeText(text);
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta);
+        ta.select(); document.execCommand('copy'); ta.remove();
+        return Promise.resolve();
+      }
+    }
+
+    // CSV parsing: robust parser handling quoted fields and separators
+    function parseCSV(text, sep=','){
+      // Normalize newlines
+      const rows = [];
+      let cur = '';
+      let row = [];
+      let inQuotes = false;
+      let i = 0;
+      let currentSep = sep;
+
+      while(i < text.length){
+        const ch = text[i];
+
+        if(ch === '"'){
+          if(inQuotes && text[i+1] === '"'){
+            // escaped quote ""
+            cur += '"';
+            i += 2;
+            continue;
+          } else {
+            inQuotes = !inQuotes;
+            i++;
+            continue;
+          }
+        }
+
+        if(!inQuotes && (ch === currentSep)){
+          row.push(cur);
+          cur = '';
+          i++;
+          continue;
+        }
+
+        if(!inQuotes && (ch === '\n' || ch === '\r')){
+          // handle CRLF
+          if(ch === '\r' && text[i+1] === '\n'){ i++; }
+          row.push(cur);
+          rows.push(row);
+          row = [];
+          cur = '';
+          i++;
+          continue;
+        }
+
+        cur += ch;
+        i++;
+      }
+
+      // final push
+      if(cur !== '' || row.length > 0){
+        row.push(cur);
+        rows.push(row);
+      }
+
+      return rows;
+    }
+
+    // detect separator: check counts of common separators in first few lines
+    function detectSeparator(text){
+      const sample = text.split(/\r?\n/).slice(0,6).join('\n');
+      const candidates = [',',';','\t','|'];
+      let best = ',';
+      let bestScore = -Infinity;
+      candidates.forEach(c => {
+        const count = (sample.split('\n').reduce((acc,l)=>acc + (l.split(c).length -1),0));
+        // prefer consistent counts across lines (low variance)
+        const counts = sample.split('\n').map(l => l.split(c).length -1);
+        const avg = counts.reduce((a,b)=>a+b,0)/counts.length;
+        const variance = counts.reduce((a,b)=>a + Math.pow(b-avg,2),0)/counts.length;
+        const score = avg - variance*0.5;
+        if(score > bestScore){ bestScore = score; best = c; }
+      });
+      return best;
+    }
+
+    // Convert CSV rows (array of arrays) to JSON array of objects
+    function csvRowsToJson(rows){
+      if(!rows || rows.length === 0) return [];
+      const header = rows[0].map(h => h.trim());
+      const data = [];
+      for(let r = 1; r < rows.length; r++){
+        const row = rows[r];
+        // skip empty trailing rows
+        if(row.length === 1 && row[0].trim() === '') continue;
+        const obj = {};
+        for(let c = 0; c < header.length; c++){
+          const key = header[c] || ('col' + (c+1));
+          obj[key] = row[c] !== undefined ? row[c] : '';
+        }
+        data.push(obj);
+      }
+      return data;
+    }
+
+    // Convert JSON (array of objects) to CSV string
+    function jsonToCsv(jsonData, sep=','){
+      // If jsonData is not an array of objects, try to normalize
+      if(!Array.isArray(jsonData)){
+        // If it's an object with keys mapping to arrays? Transform to rows
+        if(typeof jsonData === 'object'){
+          // try: { "col1": [a,b], "col2": [c,d] } -> array of objects
+          const keys = Object.keys(jsonData);
+          const len = Math.max(...keys.map(k => jsonData[k]?.length || 0));
+          const arr = [];
+          for(let i=0;i<len;i++){
+            const obj = {};
+            keys.forEach(k => obj[k] = (jsonData[k] && jsonData[k][i] !== undefined) ? jsonData[k][i] : '');
+            arr.push(obj);
+          }
+          jsonData = arr;
+        } else {
+          // primitive -> single column
+          jsonData = [ { value: jsonData } ];
+        }
+      }
+
+      // Collect header (union of keys)
+      const headers = new Set();
+      jsonData.forEach(item => {
+        if(typeof item === 'object' && item !== null){
+          Object.keys(item).forEach(k => headers.add(k));
+        } else {
+          headers.add('value');
+        }
+      });
+      const headerArr = Array.from(headers);
+      const escapeCell = (cell) => {
+        if(cell === null || cell === undefined) cell = '';
+        let txt = String(cell);
+        // if contains sep, newline or quote => wrap in quotes and escape quotes
+        if(txt.indexOf('"') !== -1) txt = txt.replace(/"/g,'""');
+        if(txt.indexOf(sep) !== -1 || txt.indexOf('\n') !== -1 || txt.indexOf('"') !== -1){
+          return `"${txt}"`;
+        }
+        return txt;
+      };
+
+      const lines = [];
+      lines.push(headerArr.map(escapeCell).join(sep));
+      jsonData.forEach(item=>{
+        const row = headerArr.map(h=>{
+          if(typeof item === 'object' && item !== null && (h in item)){
+            return escapeCell(item[h]);
+          }
+          return escapeCell('');
+        });
+        lines.push(row.join(sep));
+      });
+      return lines.join('\n');
+    }
+
+    // Try to parse input as JSON safely
+    function tryParseJSON(text){
+      try{
+        // JSON.parse is safe as we don't execute code
+        return { ok:true, data: JSON.parse(text) };
+      } catch(e){
+        return { ok:false, error: e };
+      }
+    }
+
+    // Main conversion dispatcher
+    function convert(autoDirection){
+      const raw = input.value.trim();
+      if(!raw){ output.value = ''; setStatus('Vide'); return; }
+
+      // If user forced direction with buttons, use them
+      if(autoDirection === 'json2csv'){
+        const res = tryParseJSON(raw);
+        if(!res.ok){ output.value = 'Erreur JSON : ' + res.error.message; setStatus('JSON invalide'); return; }
+        const sep = (sepSelect.value === 'auto' ? ',' : sepSelect.value);
+        const csv = jsonToCsv(res.data, sep);
+        output.value = csv;
+        setStatus('JSON → CSV');
+        return;
+      } else if(autoDirection === 'csv2json'){
+        // determine sep
+        let sep = sepSelect.value;
+        if(sep === 'auto'){ sep = detectSeparator(raw); }
+        const rows = parseCSV(raw, sep);
+        const json = csvRowsToJson(rows);
+        output.value = JSON.stringify(json, null, 2);
+        setStatus('CSV → JSON');
+        return;
+      }
+
+      // Auto detect
+      const maybeJson = tryParseJSON(raw);
+      if(maybeJson.ok){
+        // JSON -> CSV
+        const sep = (sepSelect.value === 'auto' ? ',' : sepSelect.value);
+        output.value = jsonToCsv(maybeJson.data, sep);
+        setStatus('JSON → CSV');
+        return;
+      } else {
+        // treat as CSV
+        let sep = sepSelect.value;
+        if(sep === 'auto'){ sep = detectSeparator(raw); }
+        const rows = parseCSV(raw, sep);
+        const json = csvRowsToJson(rows);
+        output.value = JSON.stringify(json, null, 2);
+        setStatus('CSV → JSON');
+        return;
+      }
+    }
+
+    // Events
+    convertBtn.addEventListener('click', ()=>convert());
+    btnJsonToCsv.addEventListener('click', ()=>convert('json2csv'));
+    btnCsvToJson.addEventListener('click', ()=>convert('csv2json'));
+
+    copyBtn.addEventListener('click', ()=>{
+      if(!output.value){ alert('Rien à copier'); return; }
+      copyToClipboard(output.value).then(()=>alert('Copié dans le presse-papiers'));
+    });
+
+    downloadBtn.addEventListener('click', ()=>{
+      if(!output.value){ alert('Rien à télécharger'); return; }
+      // select extension by detected state
+      const state = detected.textContent;
+      const ext = state.includes('CSV') ? 'csv' : 'json';
+      download(`datafacile_output.${ext}`, output.value);
+    });
+
+    beautifyBtn.addEventListener('click', ()=>{
+      // try to parse output as JSON and reformat
+      const t = output.value.trim();
+      const p = tryParseJSON(t);
+      if(p.ok){
+        output.value = JSON.stringify(p.data, null, 2);
+      } else {
+        alert('La sortie n\'est pas du JSON valide à beautifier.');
+      }
+    });
+
+    // file import
+    fileInput.addEventListener('change', (e)=>{
+      const f = e.target.files && e.target.files[0];
+      if(!f) return;
+      const reader = new FileReader();
+      reader.onload = function(ev){
+        input.value = String(ev.target.result);
+        // auto convert preview
+        convert();
+      };
+      reader.readAsText(f, 'utf-8');
+    });
+
+    // Sample / clear
+    btnClear.addEventListener('click', ()=>{
+      input.value = '';
+      output.value = '';
+      setStatus('Vide');
+    });
+
+    btnSample.addEventListener('click', ()=>{
+      input.value = '[{"nom":"Alice","age":30,"email":"alice@example.com"},{"nom":"Bob","age":25,"email":"bob@example.com"}]';
+      convert();
+    });
+
+    loadExampleArray.addEventListener('click', ()=>{
+      input.value = `[
+  {"id":1,"name":"Alice","score":92.5},
+  {"id":2,"name":"Bob","score":84},
+  {"id":3,"name":"Chloé","score":77}
+]`;
+      convert('json2csv');
+    });
+
+    loadExampleCsv.addEventListener('click', ()=>{
+      input.value = `id,name,score
+1,Alice,92.5
+2,Bob,84
+3,Chloé,77`;
+      convert('csv2json');
+    });
+
+    // keyboard shortcut: Ctrl+Enter => convert
+    input.addEventListener('keydown', (e)=>{
+      if((e.ctrlKey || e.metaKey) && e.key === 'Enter'){
+        convert();
+      }
+    });
+
+    // initial status
+    setStatus('Prêt');
+
+    // Expose convert for manual test in console (dev)
+    window.datafacile = { convert, parseCSV, jsonToCsv, csvRowsToJson };
+  })();
+  </script>
+
+  <!--
+    AD SLOTS NOTES:
+    - Replace the placeholder content in the .ad-slot divs with your AdSense snippet.
+    - Example (do not use this exact sample; use the ad code Google provides for your account):
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+                crossorigin="anonymous"></script>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-XXXXXXXXXXXX"
+             data-ad-slot="YYYYYYYYYY"
+             data-ad-format="auto"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    - For best AdSense performance:
+      * Place an ad near the top of the main content (visible on load).
+      * Place another ad mid-content / sidebar (as shown).
+      * Avoid excessive ads; respect AdSense layout policies.
+      * Make sure to have Privacy/Consent mechanisms for EU visitors (GDPR).
+  -->
+
+</body>
+</html>
